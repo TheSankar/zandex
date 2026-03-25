@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ZanDex | Swap Tokens</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary": "#472a00",
+              "inverse-primary": "#005ac2",
+              "background": "#13131b",
+              "on-secondary-fixed-variant": "#005236",
+              "error": "#ffb4ab",
+              "surface": "#13131b",
+              "primary": "#adc6ff",
+              "surface-container-high": "#292932",
+              "outline": "#8c909f",
+              "surface-variant": "#34343d",
+              "on-background": "#e4e1ed",
+              "on-primary-fixed": "#001a42",
+              "primary-container": "#4d8eff",
+              "tertiary-container": "#ca8100",
+              "surface-dim": "#13131b",
+              "surface-tint": "#adc6ff",
+              "on-tertiary-fixed-variant": "#653e00",
+              "primary-fixed": "#d8e2ff",
+              "secondary-fixed": "#6ffbbe",
+              "on-surface-variant": "#c2c6d6",
+              "surface-container-highest": "#34343d",
+              "on-tertiary-container": "#3e2400",
+              "surface-container-low": "#1b1b23",
+              "on-primary-container": "#00285d",
+              "inverse-surface": "#e4e1ed",
+              "secondary-container": "#00a572",
+              "tertiary-fixed-dim": "#ffb95f",
+              "tertiary": "#ffb95f",
+              "on-error-container": "#ffdad6",
+              "on-primary-fixed-variant": "#004395",
+              "on-tertiary-fixed": "#2a1700",
+              "surface-container-lowest": "#0d0d15",
+              "on-primary": "#002e6a",
+              "surface-container": "#1f1f27",
+              "on-surface": "#e4e1ed",
+              "inverse-on-surface": "#302f39",
+              "error-container": "#93000a",
+              "surface-bright": "#393842",
+              "on-error": "#690005",
+              "outline-variant": "#424754",
+              "primary-fixed-dim": "#adc6ff",
+              "tertiary-fixed": "#ffddb8",
+              "on-secondary": "#003824",
+              "secondary-fixed-dim": "#4edea3",
+              "on-secondary-container": "#00311f",
+              "secondary": "#4edea3",
+              "on-secondary-fixed": "#002113"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #13131b;
+            color: #e4e1ed;
+            font-family: 'Inter', sans-serif;
+        }
+        .swap-card-shadow {
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(173, 198, 255, 0.03);
+        }
+        .coming-soon-glow {
+            box-shadow: inset 0 0 12px rgba(255, 185, 95, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen">
+<!-- Navigation Drawer (Shell Sidebar) -->
+<aside class="w-[220px] h-full fixed left-0 top-0 flex flex-col bg-[#0d0d15] border-r border-gray-800/30 z-50">
+<div class="p-6 flex flex-col gap-1">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="ZanDex Logo" data-alt="Minimalist abstract tech logo with geometric shapes and a blue glowing accent on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu_aGflogXDGakaPTUhDYNhOSldomgCRtNP-jI7U0dYe0--BUY6CCHtOXHoC0zZZaMcTdXoaN0Q3d6CpdQ2LQeaTQmZvBmcB6Iqk4EKaaCKLHonGT-FGzpx7qw-T6qmXAgMBbVqa4-XLAy2FqjqvQvq-rrJVUOpolHTTu91YNtdLnduhfDqJ9JYmcc09IXpiwCfnr4Q-l_PQEAe73hxJMk_fomi9zdvkR7Mw-SZgUQs6p0G59UwC48QNmnf2SvUy3f7asBXI2V6RA"/>
+</div>
+<div>
+<h1 class="text-2xl font-bold text-[#adc6ff] tracking-tighter font-headline">ZanDex</h1>
+<p class="font-headline tracking-wider uppercase text-[10px] font-bold text-gray-500">SOMNIA DEFI</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-200 transition-colors font-label tracking-wider uppercase text-xs font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-200 transition-colors font-label tracking-wider uppercase text-xs font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+                    Yield Optimizer
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#adc6ff] border-l-4 border-[#adc6ff] bg-[#1b1b23] font-label tracking-wider uppercase text-xs font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
+                    Swap (Soon)
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-gray-200 transition-colors font-label tracking-wider uppercase text-xs font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="pie_chart">pie_chart</span>
+                    Portfolio (Soon)
+                </a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-gray-800/20">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+</div>
+<div class="overflow-hidden">
+<p class="text-xs font-bold text-on-surface truncate">0x71C...a492</p>
+<p class="text-[10px] text-gray-500 uppercase tracking-widest font-headline">Connected</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top AppBar -->
+<header class="h-14 fixed top-0 right-0 w-[calc(100%-220px)] z-40 bg-[#13131b]/80 backdrop-blur-xl flex justify-between items-center px-8 border-b border-gray-800/20">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#adc6ff]" data-icon="sensors">sensors</span>
+<h2 class="font-headline font-bold tracking-widest text-on-surface text-sm uppercase">Swap Tokens</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-low rounded-full border border-outline-variant/20">
+<div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
+<span class="text-[10px] font-headline font-bold text-on-surface-variant tracking-wider uppercase">Somnia Testnet</span>
+</div>
+<button class="text-xs font-mono text-[#adc6ff] hover:text-white transition-colors bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/20">
+                0x71C...a492
+            </button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[220px] pt-20 pb-12 px-8 flex flex-col items-center">
+<!-- Max-W-LG Container for Swap Card -->
+<div class="w-full max-w-lg mx-auto mt-6">
+<!-- Breadcrumb / Header context -->
+<div class="mb-8 text-center">
+<h3 class="text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">Liquidity Hub</h3>
+<p class="text-on-surface-variant text-sm max-w-sm mx-auto">Instant token swaps on the fastest blockchain. Zero slippage, hyper-speed execution.</p>
+</div>
+<!-- Swap Card -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 swap-card-shadow relative overflow-hidden">
+<!-- Abstract Glow Background -->
+<div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-24 -left-24 w-48 h-48 bg-secondary/5 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<!-- Card Header -->
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-headline font-bold text-white text-lg tracking-wide uppercase">Swap Tokens</h4>
+<button class="text-gray-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<!-- PAY SECTION -->
+<div class="bg-surface-container-low rounded-2xl p-4 mb-1">
+<div class="flex justify-between items-center mb-3">
+<span class="text-[10px] font-bold font-headline text-gray-500 tracking-widest uppercase">YOU PAY</span>
+<span class="text-[10px] font-medium text-gray-500">Balance: <span class="text-on-surface">0.00 STT</span></span>
+</div>
+<div class="flex items-center justify-between gap-4">
+<!-- Token Selector Pill -->
+<button class="flex items-center gap-2 bg-surface-container-high hover:bg-surface-bright transition-colors rounded-xl px-3 py-2 border border-outline-variant/10">
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] font-bold text-on-primary">S</div>
+<span class="font-headline font-bold text-white tracking-wider text-sm">STT</span>
+<span class="material-symbols-outlined text-gray-400 text-sm" data-icon="expand_more">expand_more</span>
+</button>
+<!-- Input -->
+<input class="bg-transparent border-none text-right text-3xl font-mono text-white placeholder-gray-700 focus:ring-0 w-full p-0" placeholder="0" type="text"/>
+</div>
+</div>
+<!-- Swap Switch Button -->
+<div class="relative h-4 flex items-center justify-center z-20">
+<button class="bg-surface-container-high rounded-full p-2.5 border-4 border-surface-container-lowest text-white hover:rotate-180 transition-transform duration-500 group">
+<span class="material-symbols-outlined block group-hover:text-primary transition-colors" data-icon="swap_vert">swap_vert</span>
+</button>
+</div>
+<!-- RECEIVE SECTION -->
+<div class="bg-surface-container-low rounded-2xl p-4 mt-1 mb-6">
+<div class="flex justify-between items-center mb-3">
+<span class="text-[10px] font-bold font-headline text-gray-500 tracking-widest uppercase">YOU RECEIVE</span>
+<span class="text-[10px] font-medium text-gray-500">Balance: <span class="text-on-surface">0.00 PING</span></span>
+</div>
+<div class="flex items-center justify-between gap-4">
+<!-- Token Selector Pill -->
+<button class="flex items-center gap-2 bg-surface-container-high hover:bg-surface-bright transition-colors rounded-xl px-3 py-2 border border-outline-variant/10">
+<div class="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-[10px] font-bold text-on-secondary">P</div>
+<span class="font-headline font-bold text-white tracking-wider text-sm">PING</span>
+<span class="material-symbols-outlined text-gray-400 text-sm" data-icon="expand_more">expand_more</span>
+</button>
+<!-- Input -->
+<input class="bg-transparent border-none text-right text-3xl font-mono text-white placeholder-gray-700 focus:ring-0 w-full p-0" placeholder="0" readonly="" type="text"/>
+</div>
+</div>
+<!-- Market Data Row -->
+<div class="flex justify-between items-center px-2 mb-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-gray-500" data-icon="info">info</span>
+<span class="text-xs font-mono text-gray-500">1 STT = 1.00 PING</span>
+</div>
+<span class="text-xs font-mono text-secondary font-bold tracking-tight">$0.02</span>
+</div>
+<!-- Coming Soon Alert -->
+<div class="bg-tertiary/5 border border-tertiary/20 rounded-xl p-4 coming-soon-glow mb-4">
+<p class="text-center text-tertiary text-sm font-medium flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="lock">lock</span>
+                            Coming Soon on ZanDex
+                        </p>
+</div>
+<!-- Primary Action Button (Disabled) -->
+<button class="w-full bg-primary/50 cursor-not-allowed rounded-xl py-4 flex flex-col items-center justify-center gap-0.5 border border-primary/20 backdrop-blur-sm">
+<span class="text-white font-headline font-bold tracking-widest uppercase text-sm">Swap Tokens</span>
+<span class="text-[10px] text-white/60 font-medium">(Coming Soon)</span>
+</button>
+</div>
+</div>
+<!-- Footer Stats / Asymmetric Layout Detail -->
+<div class="mt-10 grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low/40 rounded-xl p-4 border-l-2 border-primary/30">
+<p class="text-[10px] text-gray-500 uppercase tracking-widest font-headline font-bold mb-1">Expected Output</p>
+<p class="font-mono text-lg text-on-surface">0.00 PING</p>
+</div>
+<div class="bg-surface-container-low/40 rounded-xl p-4 border-l-2 border-secondary/30">
+<p class="text-[10px] text-gray-500 uppercase tracking-widest font-headline font-bold mb-1">Price Impact</p>
+<p class="font-mono text-lg text-secondary">&lt; 0.01%</p>
+</div>
+</div>
+<!-- Visual Texture Detail -->
+<div class="mt-12 opacity-30 flex flex-col items-center gap-4">
+<div class="w-full h-px bg-gradient-to-r from-transparent via-outline-variant to-transparent"></div>
+<div class="flex gap-8">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="verified_user">verified_user</span>
+<span class="text-[10px] font-headline tracking-widest uppercase">Audited Protocol</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="bolt">bolt</span>
+<span class="text-[10px] font-headline tracking-widest uppercase">0.1s Execution</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Mobile Nav Suppression as per "Destination" Rule & Shell Layout -->
+<!-- (Hidden on desktop as per JSON NavigationDrawer style) -->
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-[#0d0d15] border-t border-gray-800/30 grid grid-cols-4 h-16 z-50">
+<div class="flex flex-col items-center justify-center text-gray-500">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-headline uppercase font-bold mt-1">Dash</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span class="text-[10px] font-headline uppercase font-bold mt-1">Yield</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
+<span class="text-[10px] font-headline uppercase font-bold mt-1">Swap</span>
+</div>
+<div class="flex flex-col items-center justify-center text-gray-500">
+<span class="material-symbols-outlined" data-icon="pie_chart">pie_chart</span>
+<span class="text-[10px] font-headline uppercase font-bold mt-1">Port</span>
+</div>
+</div>
+</body></html>

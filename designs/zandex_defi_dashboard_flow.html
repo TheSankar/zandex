@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ZanDex Dashboard | Somnia DeFi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary": "#472a00",
+                        "inverse-primary": "#005ac2",
+                        "background": "#13131b",
+                        "on-secondary-fixed-variant": "#005236",
+                        "error": "#ffb4ab",
+                        "surface": "#13131b",
+                        "primary": "#adc6ff",
+                        "surface-container-high": "#292932",
+                        "outline": "#8c909f",
+                        "surface-variant": "#34343d",
+                        "on-background": "#e4e1ed",
+                        "on-primary-fixed": "#001a42",
+                        "primary-container": "#4d8eff",
+                        "tertiary-container": "#ca8100",
+                        "surface-dim": "#13131b",
+                        "surface-tint": "#adc6ff",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-surface-variant": "#c2c6d6",
+                        "surface-container-highest": "#34343d",
+                        "on-tertiary-container": "#3e2400",
+                        "surface-container-low": "#1b1b23",
+                        "on-primary-container": "#00285d",
+                        "inverse-surface": "#e4e1ed",
+                        "secondary-container": "#00a572",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "tertiary": "#ffb95f",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-tertiary-fixed": "#2a1700",
+                        "surface-container-lowest": "#0d0d15",
+                        "on-primary": "#002e6a",
+                        "surface-container": "#1f1f27",
+                        "on-surface": "#e4e1ed",
+                        "inverse-on-surface": "#302f39",
+                        "error-container": "#93000a",
+                        "surface-bright": "#393842",
+                        "on-error": "#690005",
+                        "outline-variant": "#424754",
+                        "primary-fixed-dim": "#adc6ff",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-secondary": "#003824",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-secondary-container": "#00311f",
+                        "secondary": "#4edea3",
+                        "on-secondary-fixed": "#002113"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"],
+                        "mono": ["JetBrains Mono"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .glass-effect { backdrop-filter: blur(24px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #34343d; border-radius: 10px; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased selection:bg-primary/30">
+<!-- Shared NavigationDrawer -->
+<aside class="w-[220px] h-full fixed left-0 top-0 flex flex-col h-full border-r border-outline-variant/30 bg-surface-container-lowest z-50">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container text-xl" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+<div>
+<h1 class="text-2xl font-bold text-primary tracking-tighter leading-none">ZanDex</h1>
+<p class="font-headline tracking-wider uppercase text-[10px] font-bold text-outline opacity-70">SOMNIA DEFI</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-primary border-l-4 border-primary bg-surface-container/50 font-headline font-bold text-xs uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-colors font-headline font-medium text-xs uppercase tracking-wider hover:bg-surface-container-low" href="#">
+<span class="material-symbols-outlined text-lg">trending_up</span>
+<span>Yield Optimizer</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/50 cursor-not-allowed font-headline font-medium text-xs uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined text-lg">swap_horiz</span>
+<span>Swap (Soon)</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/50 cursor-not-allowed font-headline font-medium text-xs uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined text-lg">pie_chart</span>
+<span>Portfolio (Soon)</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-4 border-t border-outline-variant/10">
+<div class="bg-surface-container-low rounded-xl p-3 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden">
+<img alt="ZanDex Logo" class="w-full h-full object-cover" data-alt="Abstract geometric minimalist logo icon for a financial decentralized exchange app" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVXfM_MMuPKfvn1R14BR6tpyYJ5AyS6zuKuiMcxJBoiix3dSONzR59JLv8FCOJlU54feAy1hWILBfh6W9XTs2kNoP9FCnPzUYOS3BTmae8iTpGwewz8D7kKUlgKC1-xW8gNexvvJTr4JRhKCtGikU3vuFEfg348Tj2IKwXJw0utJ-t5E9hTQf2RRUVWOKaG6Fam7hs8Cut4gIZDVqprfFQAPwpNZZFeg_h9tIoJMQIGP2EqteiGKTYYhZjC3pembnBqsHuJKBxsvA"/>
+</div>
+<div class="overflow-hidden">
+<p class="text-xs font-bold truncate">0x71C...a492</p>
+<p class="text-[10px] text-secondary font-mono">SOMNIA MAINNET</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-[220px] min-h-screen">
+<!-- Shared TopAppBar -->
+<header class="h-14 fixed top-0 right-0 w-[calc(100%-220px)] z-40 bg-surface/80 backdrop-blur-xl flex justify-between items-center px-8 border-b border-outline-variant/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">sensors</span>
+<h2 class="font-headline font-bold tracking-widest text-on-surface uppercase text-sm">DASHBOARD</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-mono text-[10px] text-secondary tracking-tighter">NETWORK: TESTNET-SOMNIA-1</span>
+</div>
+<button class="bg-surface-container-high px-4 py-1.5 rounded-lg font-mono text-xs font-bold text-primary border border-outline-variant/20 hover:border-primary/40 transition-all">
+                    0x71C...a492
+                </button>
+</div>
+</header>
+<!-- Page Content -->
+<section class="pt-20 px-8 pb-12 max-w-7xl mx-auto">
+<!-- Stats Row: Bento Grid Style -->
+<div class="grid grid-cols-4 gap-4 mb-10">
+<!-- TVL Card -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-2xl p-5 relative overflow-hidden group">
+<span class="material-symbols-outlined absolute top-4 right-4 text-on-surface-variant/40 group-hover:text-primary transition-colors">account_balance</span>
+<p class="font-headline text-[10px] font-bold text-on-surface-variant/60 tracking-widest mb-1">TOTAL VALUE LOCKED</p>
+<h3 class="text-3xl font-mono text-on-surface font-bold tracking-tight mb-2">$0.00</h3>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-xs text-on-surface-variant/60">verified_user</span>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant/60 uppercase">SECURED BY SOMNIA</p>
+</div>
+</div>
+<!-- ACTIVE VAULT Card -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-2xl p-5 relative overflow-hidden">
+<span class="material-symbols-outlined absolute top-4 right-4 text-secondary" style="font-variation-settings: 'FILL' 1;">diamond</span>
+<p class="font-headline text-[10px] font-bold text-on-surface-variant/60 tracking-widest mb-1">ACTIVE VAULT</p>
+<div class="flex items-center gap-2 mb-4">
+<h3 class="text-2xl font-headline text-on-surface font-bold leading-tight">Vault Alpha</h3>
+<span class="bg-primary-container/10 text-primary-container text-[10px] font-bold px-2 py-0.5 rounded-full border border-primary-container/20">ELITE</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 65%;"></div>
+</div>
+</div>
+<!-- CURRENT APY Card -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-2xl p-5 relative overflow-hidden">
+<span class="material-symbols-outlined absolute top-4 right-4 text-secondary">trending_up</span>
+<p class="font-headline text-[10px] font-bold text-on-surface-variant/60 tracking-widest mb-1">CURRENT APY</p>
+<h3 class="text-3xl font-mono text-secondary font-bold tracking-tight mb-1">8.00%</h3>
+<p class="text-[10px] font-headline font-bold text-secondary uppercase tracking-wider">+1.2% VS MARKET AVG</p>
+</div>
+<!-- REBALANCES Card -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-2xl p-5 relative overflow-hidden">
+<span class="material-symbols-outlined absolute top-4 right-4 text-tertiary" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<p class="font-headline text-[10px] font-bold text-on-surface-variant/60 tracking-widest mb-1">REBALANCES</p>
+<h3 class="text-3xl font-mono text-on-surface font-bold tracking-tight mb-1">0 <span class="text-tertiary">⚡</span></h3>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant/60 uppercase tracking-wider">NEXT: 14H 22M</p>
+</div>
+</div>
+<!-- Middle Row: Strategy Insights -->
+<div class="grid grid-cols-3 gap-6">
+<!-- Vault Alpha Card (Featured) -->
+<div class="bg-surface-container border border-outline-variant/10 rounded-2xl p-6 relative flex flex-col border-l-4 border-l-primary shadow-xl">
+<div class="flex justify-between items-start mb-6">
+<div>
+<p class="font-headline text-[10px] font-bold text-on-surface-variant/60 tracking-[0.2em] mb-1 uppercase">VAULT ALPHA</p>
+<h4 class="text-xs text-on-surface-variant/80 font-medium">High Frequency Arbitrage</h4>
+</div>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter border border-primary/20">ACTIVE</span>
+</div>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="text-4xl font-mono text-secondary font-bold">8.00%</span>
+<span class="text-sm font-headline font-bold text-on-surface-variant uppercase tracking-widest">APY</span>
+</div>
+<!-- Simplified BarChart Logic -->
+<div class="h-20 w-full flex items-end gap-1 mb-6">
+<div class="flex-1 bg-surface-container-low h-[40%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-low h-[55%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-low h-[35%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-low h-[70%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-low h-[50%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-low h-[60%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-low h-[85%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary h-[100%] rounded-t-sm shadow-[0_0_12px_rgba(173,198,255,0.4)]"></div>
+</div>
+<div class="mt-auto pt-4 flex justify-between items-end border-t border-outline-variant/10">
+<div>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant/40 uppercase mb-0.5">Strategy</p>
+<p class="text-xs text-on-surface-variant font-medium">Delta Neutral</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-headline font-bold text-on-surface-variant/40 uppercase mb-0.5">TVL</p>
+<p class="font-mono text-sm text-on-surface font-bold">$12,450,291</p>
+</div>
+</div>
+</div>
+<!-- Vault Beta Card -->
+<div class="bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6 relative flex flex-col group hover:bg-surface-container transition-all">
+<div class="flex justify-between items-start mb-6">
+<div>
+<p class="font-headline text-[10px] font-bold text-on-surface-variant/60 tracking-[0.2em] mb-1 uppercase">VAULT BETA</p>
+<h4 class="text-xs text-on-surface-variant/80 font-medium">Cross-Chain Yield Aggregator</h4>
+</div>
+<span class="bg-surface-container-high text-on-surface-variant/60 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter">STANDBY</span>
+</div>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="text-4xl font-mono text-on-surface-variant/60 font-bold group-hover:text-on-surface transition-colors">6.25%</span>
+<span class="text-sm font-headline font-bold text-on-surface-variant/40 uppercase tracking-widest">APY</span>
+</div>
+<div class="h-20 w-full flex items-end gap-1 mb-6">
+<div class="flex-1 bg-surface-container-high h-[20%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[30%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[25%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[40%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[35%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[30%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[45%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[40%] rounded-t-sm"></div>
+</div>
+<div class="mt-auto pt-4 flex justify-between items-end border-t border-outline-variant/10">
+<div>
+<p class="text-[10px] font-headline font-bold text-on-surface-variant/40 uppercase mb-0.5">Strategy</p>
+<p class="text-xs text-on-surface-variant/60 font-medium">Stable-LP</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-headline font-bold text-on-surface-variant/40 uppercase mb-0.5">TVL</p>
+<p class="font-mono text-sm text-on-surface-variant/60 font-bold">$4,812,042</p>
+</div>
+</div>
+</div>
+<!-- Event Stream Card -->
+<div class="bg-surface-container-low border border-outline-variant/10 rounded-2xl flex flex-col overflow-hidden">
+<div class="p-4 bg-surface-container-high/30 flex justify-between items-center border-b border-outline-variant/10">
+<h5 class="font-headline text-[10px] font-bold text-on-surface-variant/60 tracking-[0.2em] uppercase">EVENT STREAM</h5>
+<span class="material-symbols-outlined text-sm text-on-surface-variant/60">radio</span>
+</div>
+<div class="flex-1 p-6 flex flex-col items-center justify-center text-center opacity-60">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center mb-4 relative">
+<span class="material-symbols-outlined text-3xl text-outline-variant">sensors</span>
+<div class="absolute inset-0 border-2 border-primary/20 rounded-full animate-ping scale-150 opacity-10"></div>
+</div>
+<p class="text-sm text-on-surface font-medium mb-1">Waiting for events...</p>
+<p class="text-[10px] font-mono text-on-surface-variant uppercase tracking-widest">Connecting to Somnia Testnet RPC</p>
+<!-- Hidden state for empty logic visualization -->
+<div class="hidden w-full space-y-3 mt-6 text-left">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="text-xs text-on-surface">Vault deposit confirmed</span>
+<span class="ml-auto text-[10px] font-mono text-on-surface-variant">2m ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Dashboard Background Glow (The "Observatory" Feel) -->
+<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+</section>
+</main>
+<!-- Success Toast Notification -->
+<div class="fixed bottom-8 right-8 flex items-center gap-4 bg-surface-container-highest/80 glass-effect border-l-4 border-secondary p-4 rounded-xl shadow-2xl z-50">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<div class="pr-8">
+<p class="text-xs font-bold text-on-surface">System Connected</p>
+<p class="text-[10px] text-on-surface-variant">Oracle synchronization successful</p>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+</body></html>
