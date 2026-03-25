@@ -220,14 +220,14 @@ export default function Dashboard() {
             </Link>
           </nav>
         </div>
-        <div className="mt-auto p-4 border-t border-outline-variant/10">
-          <div className="bg-surface-container-low rounded-xl p-3 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-surface-variant overflow-hidden">
+        <div className="mt-auto p-4 border-t border-gray-800/30">
+          <div className="flex items-center gap-3 p-2 rounded-xl bg-surface-container-low">
+            <div className="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden">
               <img alt="ZanDex Logo" className="w-full h-full object-cover" src="/logo.png" />
             </div>
-            <div className="overflow-hidden">
+            <div className="flex flex-col">
               <p className="text-xs font-bold truncate text-on-surface">{address ? `${address.slice(0,6)}...${address.slice(-4)}` : '0x0...0'}</p>
-              <p className="text-[10px] text-secondary font-mono">{isConnected ? "SOMNIA TESTNET" : "NOT CONNECTED"}</p>
+              <p className="text-[10px] text-secondary font-mono tracking-widest uppercase">{isConnected ? "SOMNIA TESTNET" : "NOT CONNECTED"}</p>
             </div>
           </div>
         </div>

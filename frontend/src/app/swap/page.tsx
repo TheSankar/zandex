@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useBalance } from 'wagmi';
+import { formatEther } from 'viem';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from 'next/link';
 
@@ -9,6 +10,12 @@ export default function Swap() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
+
+  const { data: balanceData } = useBalance({
+    address: address,
+    query: { enabled: !!address, refetchInterval: 5000 }
+  });
+  const sttBalance = balanceData ? Number(formatEther(balanceData.value)).toFixed(4) : "0.0000";
 
   if (!mounted) return <div className="bg-[#13131b] text-[#e4e1ed] antialiased min-h-screen border-r border-gray-800/30 font-body"></div>;
 
@@ -95,7 +102,7 @@ export default function Swap() {
               <div className="bg-[#1b1b23] rounded-2xl p-4 mb-1">
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-[10px] font-bold font-headline text-gray-500 tracking-widest uppercase">YOU PAY</span>
-                  <span className="text-[10px] font-medium text-gray-500">Balance: <span className="text-on-surface">0.00 STT</span></span>
+                  <span className="text-[10px] font-medium text-gray-500">Balance: <span className="text-on-surface">{sttBalance} STT</span></span>
                 </div>
                 <div className="flex items-center justify-between gap-4">
                   <button className="flex items-center gap-2 bg-[#292932] hover:bg-[#393842] transition-colors rounded-xl px-3 py-2 border border-outline-variant/10">

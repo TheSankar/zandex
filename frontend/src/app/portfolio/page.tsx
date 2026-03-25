@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useAccount, useReadContract, useBalance } from 'wagmi';
+import { useAccount, useReadContract, useBalance, useWatchContractEvent } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { formatEther } from 'viem';
 import Link from 'next/link';
@@ -18,17 +18,97 @@ const vaultAbi = [
   { inputs: [], name: 'totalDeposited', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
 ] as const;
 
+const eventAbi = [
+  { anonymous: false, inputs: [{ indexed: true, name: 'user', type: 'address' }, { indexed: false, name: 'amount', type: 'uint256' }], name: 'Deposited', type: 'event' },
+  { anonymous: false, inputs: [{ indexed: false, name: 'newVault', type: 'address' }, { indexed: false, name: 'amount', type: 'uint256' }, { indexed: false, name: 'timestamp', type: 'uint256' }], name: 'Rebalanced', type: 'event' },
+  { anonymous: false, inputs: [{ indexed: false, name: 'oldRate', type: 'uint256' }, { indexed: false, name: 'timestamp', type: 'uint256' }], name: 'RateUpdated', type: 'event' },
+] as const;
+
 export default function Portfolio() {
   const { address, isConnected } = useAccount();
   const [mounted, setMounted] = useState(false);
+  const [txs, setTxs] = useState<{type: string, amount: string, vault: string, time: string, hash: string}[]>([]);
 
   useEffect(() => { setMounted(true); }, []);
 
-  const { data: userBal } = useReadContract({ address: CONTRACTS.SOMSIGNAL_VAULT, abi: vaultAbi, functionName: 'getUserDeposit', args: [address as `0x${string}`], query: { enabled: !!address, refetchInterval: 5000 } });
+  // Shared refetch to keep data fresh
+  const { data: userBal, refetch: refetchUserBal } = useReadContract({ address: CONTRACTS.SOMSIGNAL_VAULT, abi: vaultAbi, functionName: 'getUserDeposit', args: [address as `0x${string}`], query: { enabled: !!address, refetchInterval: 5000 } });
   const { data: alphaApyRaw } = useReadContract({ address: CONTRACTS.VAULT_A, abi: vaultAbi, functionName: 'currentAPY', query: { refetchInterval: 5000 } });
   const { data: betaApyRaw } = useReadContract({ address: CONTRACTS.VAULT_B, abi: vaultAbi, functionName: 'currentAPY', query: { refetchInterval: 5000 } });
   const { data: nativeBalance } = useBalance({ address: address, query: { enabled: !!address, refetchInterval: 5000 } });
   const { data: somSignalTotalDeposited } = useReadContract({ address: CONTRACTS.SOMSIGNAL_VAULT, abi: vaultAbi, functionName: 'totalDeposited', query: { refetchInterval: 5000 } });
+
+  // === EVENT WATCHERS ===
+  useWatchContractEvent({
+    address: CONTRACTS.SOMSIGNAL_VAULT,
+    abi: eventAbi,
+    eventName: 'Deposited',
+    onLogs: (logs) => {
+      logs.forEach(log => {
+        if (log.args.user?.toLowerCase() === address?.toLowerCase()) {
+          refetchUserBal();
+          setTxs(prev => [{
+            type: 'Deposit',
+            amount: `${formatEther(log.args.amount as bigint)} STT`,
+            vault: 'SomSignal Vault',
+            time: new Date().toLocaleTimeString(),
+            hash: log.transactionHash
+          }, ...prev].slice(0, 10));
+        }
+      });
+    }
+  });
+
+  useWatchContractEvent({
+    address: CONTRACTS.SOMSIGNAL_VAULT,
+    abi: eventAbi,
+    eventName: 'Rebalanced',
+    onLogs: (logs) => {
+      logs.forEach(log => {
+        setTxs(prev => [{
+          type: 'Rebalance',
+          amount: `${formatEther(log.args.amount as bigint)} STT`,
+          vault: log.args.newVault === CONTRACTS.VAULT_A ? 'Vault Alpha' : 'Vault Beta',
+          time: new Date().toLocaleTimeString(),
+          hash: log.transactionHash
+        }, ...prev].slice(0, 10));
+      });
+    }
+  });
+
+  useWatchContractEvent({
+    address: CONTRACTS.VAULT_A,
+    abi: eventAbi,
+    eventName: 'RateUpdated',
+    onLogs: (logs) => {
+      logs.forEach(log => {
+        setTxs(prev => [{
+          type: 'Rate Update',
+          amount: '--',
+          vault: 'Vault Alpha',
+          time: new Date().toLocaleTimeString(),
+          hash: log.transactionHash
+        }, ...prev].slice(0, 10));
+      });
+    }
+  });
+
+  useWatchContractEvent({
+    address: CONTRACTS.VAULT_B,
+    abi: eventAbi,
+    eventName: 'RateUpdated',
+    onLogs: (logs) => {
+      logs.forEach(log => {
+        setTxs(prev => [{
+          type: 'Rate Update',
+          amount: '--',
+          vault: 'Vault Beta',
+          time: new Date().toLocaleTimeString(),
+          hash: log.transactionHash
+        }, ...prev].slice(0, 10));
+      });
+    }
+  });
 
   const alphaApy = alphaApyRaw !== undefined ? (Number(alphaApyRaw) / 100).toFixed(2) : "—";
   const betaApy = betaApyRaw !== undefined ? (Number(betaApyRaw) / 100).toFixed(2) : "—";
@@ -327,57 +407,43 @@ export default function Portfolio() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#8c909f]/10">
-                  <tr className="hover:bg-[#0d0d15]/30 transition-colors">
-                    <td className="py-4">
-                      <span className="bg-[#00a572]/10 text-[#00a572] text-[10px] font-bold px-2.5 py-1 rounded-full border border-[#00a572]/20">Deposit</span>
-                    </td>
-                    <td className="py-4">
-                      <span className="font-mono text-sm text-[#e4e1ed]">{currentBalDisplay} STT</span>
-                    </td>
-                    <td className="py-4">
-                      <span className="text-sm text-[#8c909f]">Somnia Core Optimizer</span>
-                    </td>
-                    <td className="py-4">
-                      <span className="text-xs text-[#8c909f]">2 hours ago</span>
-                    </td>
-                    <td className="py-4 text-right">
-                      <a className="font-mono text-xs text-[#4d8eff] hover:underline truncate inline-block max-w-[120px]" href="#">0x3f2...9a12</a>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-[#0d0d15]/30 transition-colors">
-                    <td className="py-4">
-                      <span className="bg-[#ffb95f]/10 text-[#ffb95f] text-[10px] font-bold px-2.5 py-1 rounded-full border border-[#ffb95f]/20">Rebalance</span>
-                    </td>
-                    <td className="py-4">
-                      <span className="font-mono text-sm text-[#e4e1ed]">12,804.10 STT</span>
-                    </td>
-                    <td className="py-4">
-                      <span className="text-sm text-[#8c909f]">Somnia Core Optimizer</span>
-                    </td>
-                    <td className="py-4">
-                      <span className="text-xs text-[#8c909f]">5 hours ago</span>
-                    </td>
-                    <td className="py-4 text-right">
-                      <a className="font-mono text-xs text-[#4d8eff] hover:underline truncate inline-block max-w-[120px]" href="#">0x8e1...4bc3</a>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-[#0d0d15]/30 transition-colors">
-                    <td className="py-4">
-                      <span className="bg-[#4d8eff]/10 text-[#4d8eff] text-[10px] font-bold px-2.5 py-1 rounded-full border border-[#4d8eff]/20">Rate Update</span>
-                    </td>
-                    <td className="py-4">
-                      <span className="font-mono text-sm text-[#e4e1ed]">--</span>
-                    </td>
-                    <td className="py-4">
-                      <span className="text-sm text-[#8c909f]">Somnia Core Optimizer</span>
-                    </td>
-                    <td className="py-4">
-                      <span className="text-xs text-[#8c909f]">12 hours ago</span>
-                    </td>
-                    <td className="py-4 text-right">
-                      <a className="font-mono text-xs text-[#4d8eff] hover:underline truncate inline-block max-w-[120px]" href="#">0x5d9...2ef7</a>
-                    </td>
-                  </tr>
+                  {txs.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-12 text-center text-[#8c909f]">
+                        <p className="text-sm font-medium">No recent transactions found</p>
+                        <p className="text-[10px] font-mono uppercase tracking-widest mt-1">Listening for testnet events...</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    txs.map((tx, idx) => (
+                      <tr key={idx} className="hover:bg-[#0d0d15]/30 transition-colors">
+                        <td className="py-4">
+                          <span className={`${
+                            tx.type === 'Deposit' ? 'bg-[#00a572]/10 text-[#00a572] border-[#00a572]/20' : 
+                            tx.type === 'Rebalance' ? 'bg-[#ffb95f]/10 text-[#ffb95f] border-[#ffb95f]/20' : 
+                            'bg-[#4d8eff]/10 text-[#4d8eff] border-[#4d8eff]/20'
+                          } text-[10px] font-bold px-2.5 py-1 rounded-full border`}>{tx.type}</span>
+                        </td>
+                        <td className="py-4">
+                          <span className="font-mono text-sm text-[#e4e1ed]">{tx.amount}</span>
+                        </td>
+                        <td className="py-4">
+                          <span className="text-sm text-[#8c909f]">{tx.vault}</span>
+                        </td>
+                        <td className="py-4">
+                          <span className="text-xs text-[#8c909f]">{tx.time}</span>
+                        </td>
+                        <td className="py-4 text-right">
+                          <a className="font-mono text-xs text-[#4d8eff] hover:underline truncate inline-block max-w-[120px]" 
+                             href={`https://shannon-explorer.somnia.network/tx/${tx.hash}`}
+                             target="_blank"
+                             rel="noopener noreferrer">
+                            {tx.hash.slice(0,6)}...{tx.hash.slice(-4)}
+                          </a>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
