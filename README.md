@@ -1,4 +1,4 @@
-# ⚡ ZanDex — Reactive Yield Optimizer on Somnia
+#  ZanDex — Reactive Yield Optimizer on Somnia
 
 > The first yield optimizer where the blockchain rebalances itself — no bots, no servers, pure Somnia Reactivity.
 
