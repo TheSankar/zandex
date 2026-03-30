@@ -24,7 +24,8 @@ const somSignalAbi = [
   { inputs: [{ internalType: 'address', name: 'account', type: 'address' }], name: 'getUserDeposit', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
 ] as const;
 
-const routerEventAbi = [
+const routerAbi = [
+  { inputs: [], name: 'rebalanceCount', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
   { anonymous: false, inputs: [{ indexed: false, name: 'oldVault', type: 'address' }, { indexed: false, name: 'newVault', type: 'address' }, { indexed: false, name: 'reason', type: 'string' }], name: 'Rebalance', type: 'event' }
 ] as const;
 
@@ -78,16 +79,23 @@ export default function Dashboard() {
     query: { refetchInterval: 5000 },
   });
 
-  // === REBALANCE EVENT WATCHER ===
-  const [rebalanceCount, setRebalanceCount] = useState(0);
+  // === REBALANCE COUNT (Live Read) ===
+  const { data: rebalanceCountRaw, refetch: refetchRebalanceCount } = useReadContract({
+    address: CONTRACTS.REACTIVE_ROUTER,
+    abi: routerAbi,
+    functionName: 'rebalanceCount',
+    query: { refetchInterval: 5000 },
+  });
+  const rebalanceCount = rebalanceCountRaw !== undefined ? Number(rebalanceCountRaw) : 0;
 
+  // === REBALANCE EVENT WATCHER ===
   useWatchContractEvent({
     address: CONTRACTS.REACTIVE_ROUTER,
-    abi: routerEventAbi,
+    abi: routerAbi,
     eventName: 'Rebalance',
     onLogs: (logs) => {
       logs.forEach(log => {
-        setRebalanceCount(r => r + 1);
+        refetchRebalanceCount();
         setEvents(prev => [{
           msg: `Rebalanced → ${log.args.newVault === CONTRACTS.VAULT_A ? 'Vault Alpha' : 'Vault Beta'}`,
           time: new Date().toLocaleTimeString(),
@@ -105,7 +113,7 @@ export default function Dashboard() {
     eventName: 'Rebalanced',
     onLogs: (logs) => {
       logs.forEach(log => {
-        setRebalanceCount(r => r + 1);
+        refetchRebalanceCount();
         setEvents(prev => [{
           msg: `SomSignal Rebalanced → ${log.args.newVault === CONTRACTS.VAULT_A ? 'Alpha' : 'Beta'}`,
           time: new Date().toLocaleTimeString(),
