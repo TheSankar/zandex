@@ -5,28 +5,18 @@ import { getDefaultConfig, RainbowKitProvider, darkTheme } from '@rainbow-me/rai
 import { WagmiProvider, http } from 'wagmi';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
-export const somniaTestnet = {
-  id: 50312,
-  name: 'Somnia Testnet',
-  nativeCurrency: { name: 'STT', symbol: 'STT', decimals: 18 },
-  rpcUrls: {
-    default: { http: ['https://dream-rpc.somnia.network'] },
-    public: { http: ['https://dream-rpc.somnia.network'] }
-  },
-  blockExplorers: {
-    default: { name: 'Shannon Explorer', url: 'https://shannon-explorer.somnia.network' },
-  },
-} as const;
+import { somniaTestnet, RPC_URL } from '@/config/chain';
 
 export const config = getDefaultConfig({
   appName: 'ZanDex Yield Optimizer',
   projectId: '1fdfbd889980d2850970bdef1fbeaaf9', // public fallback id for WC
   chains: [somniaTestnet],
   transports: {
-    [somniaTestnet.id]: http('https://dream-rpc.somnia.network'),
+    [somniaTestnet.id]: http(RPC_URL),
   },
   ssr: true,
 });
+
 
 const queryClient = new QueryClient();
 

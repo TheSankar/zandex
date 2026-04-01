@@ -6,12 +6,8 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { parseEther, formatEther } from 'viem';
 import Link from 'next/link';
 
-const CONTRACTS = {
-  VAULT_A: "0x0d0597b6002D2f41374808F4Aeb956473871BbA9",
-  VAULT_B: "0x26970E37E9bB4172c1b89c2DE5A9E350f6d1Eec0",
-  SOMSIGNAL_VAULT: "0xbD38693e6043A9Ca8b0f7Aa4b1E6411BAeb6a830",
-  REACTIVE_ROUTER: "0xe455508ADefDe737e9D6279d39a3778EAddc5987"
-} as const;
+import { CONTRACTS } from '@/config/chain';
+
 
 const vaultAbi = [
   { inputs: [], name: 'apy', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
@@ -29,6 +25,13 @@ const routerAbi = [
   { anonymous: false, inputs: [{ indexed: false, name: 'oldVault', type: 'address' }, { indexed: false, name: 'newVault', type: 'address' }, { indexed: false, name: 'reason', type: 'string' }], name: 'Rebalance', type: 'event' }
 ] as const;
 
+const somSignalAbi = [
+  { inputs: [], name: 'totalDeposited', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+  { inputs: [], name: 'getActiveVault', outputs: [{ type: 'address' }], stateMutability: 'view', type: 'function' },
+  { inputs: [{ internalType: 'address', name: 'account', type: 'address' }], name: 'getUserDeposit', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
+] as const;
+
+
 const ADMIN_ADDRESS = '0x7c2664cf2ceb13f72047dc1137e3fc54ae59f8d5';
 
 export default function YieldOptimizer() {
@@ -44,13 +47,22 @@ export default function YieldOptimizer() {
 
   useEffect(() => { setMounted(true); }, []);
 
-  const { data: alphaApyRaw, refetch: refetchAlpha } = useReadContract({ address: CONTRACTS.VAULT_A, abi: vaultAbi, functionName: 'currentAPY', query: { refetchInterval: 5000 } });
-  const { data: betaApyRaw, refetch: refetchBeta } = useReadContract({ address: CONTRACTS.VAULT_B, abi: vaultAbi, functionName: 'currentAPY', query: { refetchInterval: 5000 } });
-  const { data: activeVaultAddress, refetch: refetchActiveVault } = useReadContract({ address: CONTRACTS.REACTIVE_ROUTER, abi: routerAbi, functionName: 'activeVault' });
-  const { data: userBal, refetch: refetchBal } = useReadContract({ address: CONTRACTS.SOMSIGNAL_VAULT, abi: vaultAbi, functionName: 'getUserDeposit', args: [address as `0x${string}`], query: { enabled: !!address, refetchInterval: 5000 } });
-  const { data: alphaTotalDeposited } = useReadContract({ address: CONTRACTS.VAULT_A, abi: vaultAbi, functionName: 'totalDeposited', query: { refetchInterval: 5000 } });
-  const { data: betaTotalDeposited } = useReadContract({ address: CONTRACTS.VAULT_B, abi: vaultAbi, functionName: 'totalDeposited', query: { refetchInterval: 5000 } });
-  const { data: somSignalTotalDeposited } = useReadContract({ address: CONTRACTS.SOMSIGNAL_VAULT, abi: vaultAbi, functionName: 'totalDeposited', query: { refetchInterval: 5000 } });
+  const { data: alphaApyRaw, refetch: refetchAlpha } = useReadContract({ address: CONTRACTS.VAULT_A, abi: vaultAbi, functionName: 'currentAPY', chainId: 50312, query: { refetchInterval: 5000 } });
+  const { data: betaApyRaw, refetch: refetchBeta } = useReadContract({ address: CONTRACTS.VAULT_B, abi: vaultAbi, functionName: 'currentAPY', chainId: 50312, query: { refetchInterval: 5000 } });
+  const { data: activeVaultAddress, refetch: refetchActiveVault } = useReadContract({ address: CONTRACTS.REACTIVE_ROUTER, abi: routerAbi, functionName: 'activeVault', chainId: 50312 });
+  const { data: rebalanceCountRaw, refetch: refetchRebalanceCount } = useReadContract({
+    address: CONTRACTS.REACTIVE_ROUTER,
+    abi: [{ inputs: [], name: 'rebalanceCount', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' }],
+    functionName: 'rebalanceCount',
+    chainId: 50312,
+    query: { refetchInterval: 3000 },
+  });
+  const rebalanceCount = Number(rebalanceCountRaw ?? 0);
+  
+  const { data: userBal, refetch: refetchBal } = useReadContract({ address: CONTRACTS.SOMSIGNAL_VAULT, abi: vaultAbi, functionName: 'getUserDeposit', args: [address as `0x${string}`], chainId: 50312, query: { enabled: !!address, refetchInterval: 5000 } });
+  const { data: alphaTotalDeposited } = useReadContract({ address: CONTRACTS.VAULT_A, abi: vaultAbi, functionName: 'totalDeposited', chainId: 50312, query: { refetchInterval: 5000 } });
+  const { data: betaTotalDeposited } = useReadContract({ address: CONTRACTS.VAULT_B, abi: vaultAbi, functionName: 'totalDeposited', chainId: 50312, query: { refetchInterval: 5000 } });
+  const { data: somSignalTotalDeposited } = useReadContract({ address: CONTRACTS.SOMSIGNAL_VAULT, abi: somSignalAbi, functionName: 'totalDeposited', chainId: 50312, query: { refetchInterval: 5000 } });
   
   const { writeContractAsync: depositAsync } = useWriteContract();
   const { writeContractAsync: withdrawAsync } = useWriteContract();
@@ -63,6 +75,7 @@ export default function YieldOptimizer() {
     eventName: 'Rebalance',
     onLogs: (logs) => {
       logs.forEach(log => {
+        refetchRebalanceCount();
         setEvents(prev => [{
           msg: `Vault Rebalance Triggered: Pivot to ${log.args.newVault === CONTRACTS.VAULT_A ? 'Alpha' : 'Beta'}`,
           time: 'Just now',
@@ -76,7 +89,13 @@ export default function YieldOptimizer() {
   const handleDeposit = async () => {
     if (!depositAmt || !address) return;
     try {
-      const tx = await depositAsync({ address: CONTRACTS.SOMSIGNAL_VAULT, abi: vaultAbi, functionName: 'deposit', value: parseEther(depositAmt) });
+      const tx = await depositAsync({ 
+        address: CONTRACTS.SOMSIGNAL_VAULT, 
+        abi: vaultAbi, 
+        functionName: 'deposit', 
+        value: parseEther(depositAmt),
+        gas: BigInt(200000)
+      });
       setEvents(prev => [{ msg: `Deposit Confirmed: ${depositAmt} STT`, time: 'Just now', tx, icon: 'arrow_downward', bg: 'bg-secondary/15', color: 'text-secondary' }, ...prev]);
       setDepositAmt("");
       refetchBal();
@@ -86,7 +105,13 @@ export default function YieldOptimizer() {
   const handleWithdraw = async () => {
     if (!depositAmt || !address) return;
     try {
-      const tx = await withdrawAsync({ address: CONTRACTS.SOMSIGNAL_VAULT, abi: vaultAbi, functionName: 'withdraw', args: [parseEther(depositAmt), address, address] });
+      const tx = await withdrawAsync({ 
+        address: CONTRACTS.SOMSIGNAL_VAULT, 
+        abi: vaultAbi, 
+        functionName: 'withdraw', 
+        args: [parseEther(depositAmt), address, address],
+        gas: BigInt(200000)
+      });
       setEvents(prev => [{ msg: `Withdraw Confirmed: ${depositAmt} STT`, time: 'Just now', tx, icon: 'arrow_upward', bg: 'bg-secondary/15', color: 'text-secondary' }, ...prev]);
       setDepositAmt("");
       refetchBal();
@@ -95,8 +120,20 @@ export default function YieldOptimizer() {
 
   const handleUpdateRates = async () => {
     try {
-      await updateApyAsyncAlpha({ address: CONTRACTS.VAULT_A, abi: vaultAbi, functionName: 'updateRate', args: [BigInt(Math.floor(Number(simAlphaApy) * 100))] });
-      await updateApyAsyncBeta({ address: CONTRACTS.VAULT_B, abi: vaultAbi, functionName: 'updateRate', args: [BigInt(Math.floor(Number(simBetaApy) * 100))] });
+      await updateApyAsyncAlpha({ 
+        address: CONTRACTS.VAULT_A, 
+        abi: vaultAbi, 
+        functionName: 'updateRate', 
+        args: [BigInt(Math.floor(Number(simAlphaApy) * 100))],
+        gas: BigInt(200000)
+      });
+      await updateApyAsyncBeta({ 
+        address: CONTRACTS.VAULT_B, 
+        abi: vaultAbi, 
+        functionName: 'updateRate', 
+        args: [BigInt(Math.floor(Number(simBetaApy) * 100))],
+        gas: BigInt(200000)
+      });
       setEvents(prev => [{ msg: `Rates Update: Alpha ${simAlphaApy}%, Beta ${simBetaApy}%`, time: 'Just now', icon: 'trending_up', bg: 'bg-primary/15', color: 'text-primary' }, ...prev]);
       // Refetch on-chain data after successful rate update
       setTimeout(async () => {
@@ -119,37 +156,39 @@ export default function YieldOptimizer() {
   const apyDiff = Math.abs(Number(simAlphaApy) - Number(simBetaApy)).toFixed(2);
   const rebalanceMsg = Number(apyDiff) > 2.0 ? "Diff >2.00% — Rebalance Expected" : `Diff ${apyDiff}% — Below threshold`;
 
-  // Track APY history for live chart - capture data points every 10 seconds to create moving history
+  // Track APY history for live chart - capture data points and seed history on mount
   useEffect(() => {
-    const capturePoint = () => {
-      const now = new Date();
-      const timeLabel = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+    if (mounted && alphaApyRaw !== undefined && betaApyRaw !== undefined) {
+      const alphaVal = Number(alphaApyRaw) / 100;
+      const betaVal = Number(betaApyRaw) / 100;
       
       setApyHistory(prev => {
-        // If history is empty, seed it with 5 points of slight variance to avoid straight lines
+        // Initial seeding on first mount or when data first arrives
         if (prev.length === 0) {
-          const baseAlpha = Number(alphaApy);
-          const baseBeta = Number(betaApy);
-          return [
-            { time: '-40s', alpha: baseAlpha - 0.1, beta: baseBeta + 0.1 },
-            { time: '-30s', alpha: baseAlpha + 0.05, beta: baseBeta - 0.05 },
-            { time: '-20s', alpha: baseAlpha - 0.02, beta: baseBeta + 0.03 },
-            { time: '-10s', alpha: baseAlpha, beta: baseBeta },
-            { time: timeLabel, alpha: baseAlpha, beta: baseBeta }
-          ];
+          const initialPoints = [];
+          const nowTime = new Date();
+          for(let i=19; i>=0; i--) {
+            const time = new Date(nowTime.getTime() - i * 10000); // 10s intervals
+            initialPoints.push({
+              time: time.toLocaleTimeString('en-GB', { hour12: false }),
+              alpha: alphaVal,
+              beta: betaVal
+            });
+          }
+          return initialPoints;
         }
         
-        const next = [...prev, { time: timeLabel, alpha: Number(alphaApy), beta: Number(betaApy) }];
-        return next.slice(-20); // keep last 20 data points
+        // Append new points on update
+        const lastPoint = prev[prev.length - 1];
+        if (lastPoint.alpha !== alphaVal || lastPoint.beta !== betaVal) {
+          const timeLabel = new Date().toLocaleTimeString('en-GB', { hour12: false });
+          const next = [...prev, { time: timeLabel, alpha: alphaVal, beta: betaVal }];
+          return next.slice(-30); // Keep max 30 points
+        }
+        return prev;
       });
-    };
-
-    const interval = setInterval(capturePoint, 10000);
-    // Initial capture if empty
-    if (apyHistory.length === 0 && mounted) capturePoint();
-    
-    return () => clearInterval(interval);
-  }, [alphaApy, betaApy, mounted, apyHistory.length]);
+    }
+  }, [alphaApyRaw, betaApyRaw, mounted]);
 
   // Auto-poll APYs every 10 seconds to catch external updates
   useEffect(() => {
@@ -240,6 +279,22 @@ export default function YieldOptimizer() {
               Autonomous liquidity management on Somnia. Our reactive smart contracts automatically pivot capital to the highest performing vaults based on real-time on-chain data.
             </p>
           </section>
+
+          {/* Stats Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-surface-container-low border border-outline-variant/10 rounded-xl p-5 flex flex-col">
+              <span className="text-[10px] font-headline font-bold text-outline tracking-widest uppercase mb-1">TOTAL TVL</span>
+              <span className="text-2xl font-mono font-bold text-on-surface">{somSignalTotalDeposited !== undefined ? Number(formatEther(somSignalTotalDeposited as bigint)).toFixed(2) : '0.00'} STT</span>
+            </div>
+            <div className="bg-surface-container-low border border-outline-variant/10 rounded-xl p-5 flex flex-col">
+              <span className="text-[10px] font-headline font-bold text-outline tracking-widest uppercase mb-1">PROTOCOL REBALANCES</span>
+              <span className="text-2xl font-mono font-bold text-tertiary">{rebalanceCount} ⚡</span>
+            </div>
+            <div className="bg-surface-container-low border border-outline-variant/10 rounded-xl p-5 flex flex-col">
+              <span className="text-[10px] font-headline font-bold text-outline tracking-widest uppercase mb-1">ACTIVE STRATEGY</span>
+              <span className="text-2xl font-headline font-bold text-secondary uppercase tracking-tight">{isVaultAActive ? 'Delta Alpha' : 'Beta Aggregator'}</span>
+            </div>
+          </div>
 
           {/* Main Dashboard Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -6,12 +6,8 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { formatEther } from 'viem';
 import Link from 'next/link';
 
-const CONTRACTS = {
-  VAULT_A: "0x0d0597b6002D2f41374808F4Aeb956473871BbA9",
-  VAULT_B: "0x26970E37E9bB4172c1b89c2DE5A9E350f6d1Eec0",
-  SOMSIGNAL_VAULT: "0xbD38693e6043A9Ca8b0f7Aa4b1E6411BAeb6a830",
-  REACTIVE_ROUTER: "0xe455508ADefDe737e9D6279d39a3778EAddc5987"
-} as const;
+import { CONTRACTS, CHAIN_ID } from '@/config/chain';
+
 
 const vaultAbi = [
   { inputs: [], name: 'currentAPY', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' },
@@ -82,9 +78,10 @@ export default function Dashboard() {
   // === REBALANCE COUNT (Live Read) ===
   const { data: rebalanceCountRaw, refetch: refetchRebalanceCount } = useReadContract({
     address: CONTRACTS.REACTIVE_ROUTER,
-    abi: routerAbi,
+    abi: [{ inputs: [], name: 'rebalanceCount', outputs: [{ type: 'uint256' }], stateMutability: 'view', type: 'function' }],
     functionName: 'rebalanceCount',
-    query: { refetchInterval: 5000 },
+    chainId: 50312,
+    query: { refetchInterval: 3000 },
   });
   const rebalanceCount = rebalanceCountRaw !== undefined ? Number(rebalanceCountRaw) : 0;
 
